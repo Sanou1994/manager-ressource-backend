@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+
+  ressoure-backend:
+    image: 'ressource-backend:latest'
+    build:
+      context: .
+    container_name: ressource-backend
+    ports:
+      - "6060:6060"
+
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://158.69.120.240:5432/ressource
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=okiosk
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
