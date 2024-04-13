@@ -26,6 +26,12 @@ public class Ressource
     private String marque;
     private int currentCount;
     private int demandCount;
+    private int countByGroups=0;
+    private double mount;
+    private boolean paidByHours=false;
+    private boolean paidByDays=false;
+    private boolean paidByGroups=false;
+    private boolean unpaid=true;
     private boolean  status;
     private boolean temporaly;
     private boolean programmable;

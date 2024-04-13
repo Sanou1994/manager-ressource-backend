@@ -15,6 +15,12 @@ public class RessourceDtoRequest {
     private String code;
     private String marque;
     private int count;
+    private double mount;
+    private boolean paidByHours;
+    private boolean paidByDays;
+    private boolean paidByGroups;
+    private int countByGroups;
+    private boolean unpaid;
     private int currentCount;
     private int demandCount;
     private boolean  status;

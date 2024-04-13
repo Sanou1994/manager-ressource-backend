@@ -27,7 +27,8 @@ public class PlanningService implements CrudService <PlanningDtoRequest>
     private static final Logger logger = LoggerFactory.getLogger(PlanningService.class);
     @Autowired
     private IDaoPlanning planningRepository;
-
+    @Autowired
+    private IDaoRessource ressourceRepository;
     @Autowired(required=true)
     private ModelMapper modelMapper;
     @Override
@@ -36,14 +37,42 @@ public class PlanningService implements CrudService <PlanningDtoRequest>
 
         try
         {
-
+            if(obj.getRessourceId() !=null ) {
+                Ressource ressource = ressourceRepository.findById(obj.getRessourceId()).get();
                 Planning planningConverted =modelMapper.map(obj, Planning.class);
                 planningConverted.setActive(true);
+                long duration=planningConverted.getEndDate() -planningConverted.getStartDate();
+                double hours= (duration/3600000.00);
+                double days= (hours/24.00);
+
+                if(ressource.isPaidByDays())
+                {
+                    planningConverted.setMount(Math.round(ressource.getMount()*days));
+                }
+                else if(ressource.isPaidByHours())
+                {
+                    planningConverted.setMount(Math.round(ressource.getMount()*hours));
+
+                }
+                else {
+                    planningConverted.setMount(0);
+                }
+
+
                 Planning planningSave = planningRepository.save(planningConverted);
                 reponse.setData(modelMapper.map(planningSave, PlanningDtoResponse.class));
                 reponse.setMessage("Ce planning a été enregistré avec succès");
                 logger.error("Ce planning a été enregistré avec succès ");
                 reponse.setCode(200);
+
+
+            }
+            else
+            {
+                logger.error(" Veuillez choisir une ressource ");
+                reponse.setCode(201);
+                reponse.setMessage("Veuillez choisir une ressource  !");
+            }
 
 
 
@@ -64,11 +93,10 @@ public class PlanningService implements CrudService <PlanningDtoRequest>
         try
         {
 
-            if(obj.getId() != null)
+            if(obj.getId() != null && obj.getRessourceId() !=null )
             {
+                Ressource ressource= ressourceRepository.findById(obj.getRessourceId()).get();
                 Optional<Planning> userById = planningRepository.findById(obj.getId());
-
-
 
                     userById.get().setActive(true);
                     if(obj.getStartDate() != 0 && obj.getStartDate() != userById.get().getStartDate())
@@ -87,10 +115,28 @@ public class PlanningService implements CrudService <PlanningDtoRequest>
                     {
                         userById.get().setTarget(obj.getTarget());
                     }
+                    if(obj.getRegisterId() != null && obj.getRegisterId().compareTo(userById.get().getRegisterId()) ==0)
+                    {
+                        userById.get().setRegisterId(obj.getRegisterId());
+                    }
+                    long duration=userById.get().getEndDate() -userById.get().getStartDate();
+                    double hours= (duration/3600000.00);
+                    double days= (hours/24.00);
 
-                    userById.get().setRegisterId(obj.getRegisterId());
+                    if(ressource.isPaidByDays())
+                    {
+                        userById.get().setMount(Math.round(ressource.getMount()*days));
+                    }
+                    else if(ressource.isPaidByHours())
+                    {
+                        userById.get().setMount(Math.round(ressource.getMount()*hours));
+
+                    }
+                    else {
+                        userById.get().setMount(0);
+                    }
                     Planning userSave = planningRepository.save(userById.get());
-                     PlanningDtoResponse agencyDtoResponse=modelMapper.map(userSave, PlanningDtoResponse.class);
+                    PlanningDtoResponse agencyDtoResponse=modelMapper.map(userSave, PlanningDtoResponse.class);
                     reponse.setData(agencyDtoResponse);
                     reponse.setMessage("Ce planning a été modifié avec succès");
                     reponse.setCode(200);

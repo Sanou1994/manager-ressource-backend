@@ -23,7 +23,12 @@ public class RessourceDtoResponse
     private String marque;
     private int reservationTotalCount;
     private int demandCount;
+    private int countByGroups;
     private double mount;
+    private boolean paidByHours;
+    private boolean paidByDays;
+    private boolean paidByGroups;
+    private boolean unpaid;
     private boolean  status;
     private List<PlanningDtoResponse> plannings= new ArrayList<>();
     private boolean temporaly;

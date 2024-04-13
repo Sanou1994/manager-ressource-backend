@@ -68,6 +68,10 @@ public class RessourceService implements CrudService <RessourceDtoRequest>
 
             if(obj.getId() != null)
             {
+
+                int countUnavailability=  unavailabilityRepository.findByRessourceID(obj.getId()).size();
+                int countDefinitely=definitelyRepository.findByRessourceID(obj.getId()).size();
+
                 Optional<Ressource> userById = ressourceRepository.findById(obj.getId());
                 if(obj.getCategory() != null && !obj.getCategory().equals(userById.get().getCategory()))
                 {
@@ -81,8 +85,24 @@ public class RessourceService implements CrudService <RessourceDtoRequest>
                 {
                     userById.get().setMarque(obj.getMarque());
                 }
+                if(countUnavailability ==0 && countDefinitely==0 && obj.getMount() != 0 && obj.getMount() != userById.get().getMount())
+                {
+                    userById.get().setMount(obj.getMount());
+                }
+                if( countUnavailability ==0 && countDefinitely==0 && obj.isPaidByDays() != userById.get().isPaidByDays())
+                {
+                    userById.get().setPaidByDays(obj.isPaidByDays());
+                }
+                if( countUnavailability ==0 && countDefinitely==0 && obj.isPaidByHours() != userById.get().isPaidByHours())
+                {
+                    userById.get().setPaidByHours(obj.isPaidByHours());
+                }
+                if(countUnavailability ==0 && countDefinitely==0 && obj.isPaidByGroups() != userById.get().isPaidByGroups())
+                {
+                    userById.get().setPaidByGroups(obj.isPaidByGroups());
+                }
 
-                if(obj.getCount() != 0 && obj.getCount() != userById.get().getCount())
+                if( countUnavailability ==0 && countDefinitely==0 &&obj.getCount() != 0 && obj.getCount() != userById.get().getCount())
                 {
 
                 userById.get().setCurrentCount(userById.get().getCurrentCount() + (obj.getCount() - userById.get().getCount()));
@@ -97,7 +117,7 @@ public class RessourceService implements CrudService <RessourceDtoRequest>
                 Ressource userSave = ressourceRepository.save(userById.get());
                 RessourceDtoResponse agencyDtoResponse=modelMapper.map(userSave, RessourceDtoResponse.class);
                 reponse.setData(agencyDtoResponse);
-                reponse.setMessage("Cette ressource a été modifiée avec succès");
+                reponse.setMessage( "Cette ressource a été modifiée avec succès");
                 reponse.setCode(200);
                 logger.error(" Cette ressource a été modifiée avec succès  " +userById.get().getCategory());
 
